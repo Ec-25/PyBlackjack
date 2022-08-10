@@ -1,7 +1,8 @@
 # Intento de Blackjack con 1 Crupier, hasta 4 Jugadores, y infinitas Rondas
 import random
 
-class Player():
+
+class Player:
     def __init__(self):
         # Estado inicial
 
@@ -21,14 +22,11 @@ class Player():
         self.apuesta = 0
         self.points = 0
 
-
     def name(self):
         return self.nombre
-    
 
     def change_name(self, nname):
         self.nombre = nname
-
 
     def subir_fichas(self, fichas):
         # ingresa las fichas colocadas
@@ -37,11 +35,9 @@ class Player():
         # informa cuantas tiene disponible
         return self.chips
 
-
     def comprobar_fichas(self, gano):
         if gano + self.chips > self.fichas_maximas:
             self.fichas_maximas = gano + self.chips
-
 
     def iniciar_partida(self, apuesta):
         # se descuenta la apuesta inicial
@@ -59,21 +55,20 @@ class Player():
         carta, palo = self.tirar_carta()
         self.informar(carta, palo)
 
-
     def jugar(self):
         # se realiza una mano
         carta, palo = self.tirar_carta()
         self.informar(carta, palo)
 
-
-    def tirar_carta(self):
+    @staticmethod
+    def tirar_carta():
         # valor 10, excepto la A, vale 11, pero en caso de que el jugador con esta pueda sumar mas de 21 vale 1
-        cartas_especiales = ("A", "J", "Q", "K") 
+        cartas_especiales = ("A", "J", "Q", "K")
         palos_cartas = ("Picas", "Treboles", "Corazones", "Rombos")
 
         # determinamos el valor de la carta
-        carta = random.randint(1, 11) 
-        
+        carta = random.randint(1, 11)
+
         # si es 1 o 11 determinamos la letra
         if carta == 1:
             carta = cartas_especiales[0]
@@ -85,7 +80,6 @@ class Player():
         palo = palos_cartas[random.randint(0, 3)]
 
         return carta, palo
-
 
     def informar(self, carta, palo):
         # imprimir en consola el resultado de la mano obtenida
@@ -101,21 +95,20 @@ class Player():
 
         else:
             self.points += carta
-        
+
         if self.points != 0:
             # definimos el mensaje para cuando los puntos sean distintos de 0
             if str(carta) in "AJQK":
                 print("Ha sacado la", carta, "de", palo, "sumando", self.points, "puntos")
             else:
                 print("Ha sacado el", carta, "de", palo, "sumando", self.points, "puntos")
-        
+
         else:
             # definimos el mensaje para cuando los puntos sean iguales a 0
             if str(carta) in "AJQK":
                 print("Ha sacado la", carta, "de", palo)
             else:
                 print("Ha sacado el", carta, "de", palo)
-
 
     def estadisticas(self):
         print("\n=====================================================")
@@ -131,7 +124,7 @@ class Player():
 
 def menu():
     # diseño del menu
-    menu ="""\n    =====================================================
+    menuini = """\n    =====================================================
     \t\tBlacJack V2.0
     =====================================================
     \t1) Crear Jugador
@@ -140,7 +133,7 @@ def menu():
     \t4) Estadisticas
     \t5) Salir
     ====================================================="""
-    print(menu)
+    print(menuini)
     # opcion a elejir del usuario
     opcion = 0
     # controlamos que solo ingrese numeros del 1 al 5
@@ -151,11 +144,11 @@ def menu():
         # controlamos que solo ingrese numeros
         except ValueError:
             pass
-    
+
     # si es 5 colocamos -1 para finalizar el bucle del programa
     if opcion == 5:
         opcion = -1
-    
+
     return opcion
 
 
@@ -168,9 +161,10 @@ def crear_jugador():
     while len(name) > 16:
         print("\nError, nombre no valido, Maximo 16 caracteres...")
         name = input("Seleccione un nombre:\t")
-    
+
     # instanciamos al jugador y le asignamos nombre
     if players == 1:
+        global player1
         player1 = Player()
         player1.change_name(name)
 
@@ -235,7 +229,7 @@ def crear_jugador():
 
         else:
             pass
-        
+
         players = 4
 
 
@@ -250,7 +244,7 @@ def ingresar_fichas(player):
 
     if player == 1:
         print("La cantida de fichas que usted tiene es:", player1.subir_fichas(chips))
-    
+
     elif player == 2:
         print("La cantida de fichas que usted tiene es:", player2.subir_fichas(chips))
 
@@ -284,7 +278,7 @@ def program():
     while salir != -1:
         # imprimir menu y determinar que quiere realizar el jugador
         salir = menu()
-        
+
         if salir == 1:
             # opcion crear jugdor nuevo
             crear_jugador()
@@ -295,34 +289,34 @@ def program():
             print(">>>")
             try:
                 print("1- ", player1.name())
-            except:
+            except NameError:
                 pass
 
             try:
                 print("2- ", player2.name())
-            except:
+            except NameError:
                 pass
-                
+
             try:
                 print("3- ", player3.name())
-            except:
+            except NameError:
                 pass
 
             try:
                 print("4- ", player4.name())
-            except:
+            except NameError:
                 pass
 
             print("5- Salir")
             print("<<<")
             print("\nElija una posicion para Ingresar Fichas:")
-            
+
             # validacion de opcion
             pos = -1
             while pos not in (1, 2, 3, 4, 5):
                 try:
                     pos = int(input("Jugador nro:\t\t"))
-                
+
                 except ValueError:
                     pass
             try:
@@ -330,10 +324,10 @@ def program():
                     ingresar_fichas(pos)
                 else:
                     continue
-                
-            except:
+
+            except NameError:
                 print("Error, Jugador Invalido.")
-        
+
         elif salir == 3:
             # opcion jugar
             player1.iniciar_partida(12)
@@ -345,46 +339,45 @@ def program():
             print(">>>")
             try:
                 print("1- ", player1.name())
-            except:
+            except NameError:
                 pass
 
             try:
                 print("2- ", player2.name())
-            except:
+            except NameError:
                 pass
-                
+
             try:
                 print("3- ", player3.name())
-            except:
+            except NameError:
                 pass
 
             try:
                 print("4- ", player4.name())
-            except:
+            except NameError:
                 pass
 
             print("5- Salir")
             print("<<<")
             print("\nElija una posicion para Ver Estadisticas:")
-            
+
             # validacion de opcion
             pos = -1
             while pos not in (1, 2, 3, 4, 5):
                 try:
                     pos = int(input("Jugador nro:\t\t"))
-                
+
                 except ValueError:
                     pass
-            
+
             try:
                 if pos != 5:
                     ver_stats(pos)
                 else:
                     continue
-                
-            except:
-                print("Error, Jugador Invalido.")
 
+            except NameError:
+                print("Error, Jugador Invalido.")
 
     # salida
     exit("\nDone!")
@@ -392,4 +385,5 @@ def program():
 
 if __name__ == "__main__":
     # comprobacion de ejecucion
+
     program()
