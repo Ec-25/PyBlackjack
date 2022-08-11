@@ -111,7 +111,7 @@ class Player:
                 print("Ha sacado el", carta, "de", palo)
 
     def estadisticas(self):
-        print("\n=====================================================")
+        print("\n\t=====================================================\n")
         print("\tJugador:", self.nombre)
         print("\tCantidad de Victorias:", self.wins)
         print("\tCantidad de Derrotas:", self.failed)
@@ -119,7 +119,7 @@ class Player:
         print("\tSu apuesta maxima fue:", self.apuesta_maxima)
         print("\tCantidad de Fichas Disponibles:", self.chips)
         print("\tMonto maximos de Fichas que ha logrado tener:", self.fichas_maximas)
-        print("\n=====================================================")
+        print("\n\t=====================================================")
 
 
 def menu():
@@ -128,16 +128,14 @@ def menu():
     \t\tBlacJack V2.0
     =====================================================
     \t1) Crear Jugador
-    \t2) Ingresar Fichas
-    \t3) Jugar
-    \t4) Estadisticas
-    \t5) Salir
+    \t2) Jugar
+    \t3) Salir
     ====================================================="""
     print(menuini)
     # opcion a elejir del usuario
     opcion = 0
-    # controlamos que solo ingrese numeros del 1 al 5
-    while opcion not in (1, 2, 3, 4, 5):
+    # controlamos que solo ingrese numeros del 1 al 3
+    while opcion not in (1, 2, 3):
         try:
             opcion = int(input("OPCION = "))
 
@@ -145,11 +143,156 @@ def menu():
         except ValueError:
             pass
 
-    # si es 5 colocamos -1 para finalizar el bucle del programa
-    if opcion == 5:
+    # si es 3 colocamos -1 para finalizar el bucle del programa
+    if opcion == 3:
         opcion = -1
 
     return opcion
+
+
+def menu_sell_jugador():
+    # diseño del menu de seleccion de jugador
+    menujugador = """\n    =====================================================
+    \t\tSeleccione su Jugador
+    =====================================================
+    """
+    print(menujugador)
+    # con los try, se garantiza que solo se imprimiran aquellos jugadores que existen
+    print(">>>")
+    try:
+        print("1- ", player1.name())
+    except NameError:
+        pass
+
+    try:
+        print("2- ", player2.name())
+    except NameError:
+        pass
+
+    try:
+        print("3- ", player3.name())
+    except NameError:
+        pass
+
+    try:
+        print("4- ", player4.name())
+    except NameError:
+        pass
+
+    print("5- Salir")
+    print("<<<")
+    print("\n    =====================================================")
+    # validacion de opcion
+    jug = -1
+    while jug not in (1, 2, 3, 4, 5):
+        try:
+            jug = int(input("Jugador nro:\t\t"))
+
+            if jug == 1:
+                try:
+                    # con una bienvenida podemos determinar si el jugador existe
+                    print("\nBienvenido/a", player1.name())
+
+                except NameError:
+                    # si no se imprime un mensaje de error
+                    print("Error, El jugador no Existe.")
+                    jug = -1
+
+            elif jug == 2:
+                try:
+                    print("\nBienvenido/a", player2.name())
+
+                except NameError:
+                    print("Error, El jugador no Existe.")
+                    jug = -1
+
+            elif jug == 3:
+                try:
+                    print("\nBienvenido/a", player3.name())
+
+                except NameError:
+                    print("Error, El jugador no Existe.")
+                    jug = -1
+
+            elif jug == 4:
+                try:
+                    print("\nBienvenido/a", player4.name())
+
+                except NameError:
+                    print("Error, El jugador no Existe.")
+                    jug = -1
+
+            else:
+                # si la opcion no existe se imprime el mensaje de error
+                if jug != 5:
+                    print("Opcion Invalida")
+
+        except ValueError:
+            print("Error, Jugador Invalido.")
+
+    # si es 5 colocamos 0 para volver al bucle del programa
+    if jug == 5:
+        jug = 0
+
+    return jug
+
+
+def menu_jugar(player):
+    # obtenemos el nombre del jugador
+    jugador = player
+    if player == 1:
+        nomb = player1.name()
+
+    elif player == 2:
+        nomb = player2.name()
+
+    elif player == 3:
+        nomb = player3.name()
+
+    else:
+        nomb = player4.name()
+
+    opcion = -1
+    while opcion != 0:
+
+        # diseño del menu
+        print("\n    =====================================================", "\n\t\tBienvenido/a:", nomb, """\n\t=====================================================
+        1) Ingresar Fichas
+        2) Jugar BJ
+        3) Ver Estadisticas
+        4) Salir
+    =====================================================""")
+        # opcion a elejir del usuario
+        opcion = -1
+
+        # controlamos que solo ingrese numeros del 1 al 4
+        while opcion not in (1, 2, 3, 4):
+            try:
+                opcion = int(input("OPCION = "))
+
+                # control de seleccion de opcion
+                if opcion not in (1, 2, 3, 4):
+                    print("Opcion Invalida")
+
+            # controlamos que solo ingrese numeros
+            except ValueError:
+                pass
+
+        # si es 4 colocamos 0 para volver al bucle del programa
+        if opcion == 4:
+            break
+
+        if opcion == 1:
+            # opcion de ingresar fichas
+            ingresar_fichas(jugador)
+
+        elif opcion == 2:
+            # opcion de jugar
+            print()
+
+        elif opcion == 3:
+            # opcion ver estadisticas
+            ver_stats(jugador)
 
 
 def crear_jugador():
@@ -251,7 +394,7 @@ def ingresar_fichas(player):
     elif player == 3:
         print("La cantida de fichas que usted tiene es:", player3.subir_fichas(chips))
 
-    elif player4 == 4:
+    elif player == 4:
         print("La cantida de fichas que usted tiene es:", player4.subir_fichas(chips))
 
 
@@ -259,13 +402,13 @@ def ver_stats(player):
     if player == 1:
         player1.estadisticas()
 
-    elif player2 == 2:
+    elif player == 2:
         player2.estadisticas()
 
-    elif player3 == 3:
+    elif player == 3:
         player3.estadisticas()
 
-    elif player4 == 4:
+    elif player == 4:
         player4.estadisticas()
 
 
@@ -284,100 +427,16 @@ def program():
             crear_jugador()
 
         elif salir == 2:
-            # opcion ingresar fichas a un jugador
-            # con los try, se garantiza que solo se imprimiran aquellos jugadores que existen
-            print(">>>")
-            try:
-                print("1- ", player1.name())
-            except NameError:
-                pass
+            # jugar, seleccionar jugador, y luego preguntar monto a apostar, y empezar la partida
 
-            try:
-                print("2- ", player2.name())
-            except NameError:
-                pass
+            # primero se selecciona 1 de los 4 jugadores disponibles
+            player = menu_sell_jugador()
+            # segundo base a ese jugador, lo que el jugador decida realizar
+            if player != 0:
+                menu_jugar(player)
 
-            try:
-                print("3- ", player3.name())
-            except NameError:
-                pass
-
-            try:
-                print("4- ", player4.name())
-            except NameError:
-                pass
-
-            print("5- Salir")
-            print("<<<")
-            print("\nElija una posicion para Ingresar Fichas:")
-
-            # validacion de opcion
-            pos = -1
-            while pos not in (1, 2, 3, 4, 5):
-                try:
-                    pos = int(input("Jugador nro:\t\t"))
-
-                except ValueError:
-                    pass
-            try:
-                if pos != 5:
-                    ingresar_fichas(pos)
-                else:
-                    continue
-
-            except NameError:
-                print("Error, Jugador Invalido.")
-
-        elif salir == 3:
-            # opcion jugar
-            player1.iniciar_partida(12)
-            pass
-
-        elif salir == 4:
-            # opcion mostrar estadisticas
-            # con los try, se garantiza que solo se imprimiran aquellos jugadores que existen
-            print(">>>")
-            try:
-                print("1- ", player1.name())
-            except NameError:
-                pass
-
-            try:
-                print("2- ", player2.name())
-            except NameError:
-                pass
-
-            try:
-                print("3- ", player3.name())
-            except NameError:
-                pass
-
-            try:
-                print("4- ", player4.name())
-            except NameError:
-                pass
-
-            print("5- Salir")
-            print("<<<")
-            print("\nElija una posicion para Ver Estadisticas:")
-
-            # validacion de opcion
-            pos = -1
-            while pos not in (1, 2, 3, 4, 5):
-                try:
-                    pos = int(input("Jugador nro:\t\t"))
-
-                except ValueError:
-                    pass
-
-            try:
-                if pos != 5:
-                    ver_stats(pos)
-                else:
-                    continue
-
-            except NameError:
-                print("Error, Jugador Invalido.")
+            else:
+                continue
 
     # salida
     exit("\nDone!")
