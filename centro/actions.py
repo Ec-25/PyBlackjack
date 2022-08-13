@@ -123,14 +123,14 @@ def tirar_carta():
 
 def ingresar_fichas(players, playerID):
     chips = -1
-    while chips < 0 or chips > 100000:
+    while 0 >= chips or chips >= 100001:
         try:
             chips = int(input("Cantidad de Fichas\t"))
 
         except ValueError:
             pass
 
-        print("La cantida de fichas que usted tiene es:", players[playerID - 1].subir_fichas(chips))
+    print("La cantida de fichas que usted tiene es:", players[playerID - 1].subir_fichas(chips))
 
 def ver_stats(players, playerID):
     players[playerID - 1].estadisticas()
@@ -152,9 +152,8 @@ def iniciar_partida(players, playerID):
     # determinar si se hizo 21 natural
     puntospara21 = players[playerID - 1].puntos()
     if puntospara21 == 21:
-        print("Enhorabuena, BlackJack Natural, Has ganado el triple de tu apuesta")
-    
-        return -1
+        # hizo 21 natural por lo que se retorna lo pertinente
+        return -1, False
 
     # primera tirada del crupier
     print("\n\tPrimera carta del Crupier")
@@ -165,8 +164,13 @@ def iniciar_partida(players, playerID):
         if str(carta) in "A":
             points_crupier = 11
 
+            # si saca us As, se le da al jugador la oportunidad de apostar sobre seguro(si cree que el crupier puede hacer blackjack con su segunda carta, si gana sera recompensado con el doble de lo que aposto a seguro)
+            de11 = True
+
         else:
             points_crupier = 10
+
+            de11 = False
 
         print("\nHa sacado la", carta, "de", palo, "sumando", points_crupier, "puntos")
         
@@ -174,7 +178,10 @@ def iniciar_partida(players, playerID):
         points_crupier = carta
         print("\nHa sacado el", carta, "de", palo, "sumando", points_crupier, "puntos")
 
-    return points_crupier
+        de11 = False
+
+    return points_crupier, de11
+
 
 def jugar(players, playerID):
     # una tirada mas
@@ -187,9 +194,11 @@ def jugar(players, playerID):
 
     return  players[playerID - 1].puntos()
 
-def tiradas_crupier(points_crupier):
+def tiradas_crupier(points_crupier, flag, players, playerID):
+    print("\n=====================================================")
     print("\n\tAhora el Crupier Tirara las cartas que considere...")
     puntos_crupier = points_crupier
+    
     # bucle de tiradas
     while puntos_crupier < 17:
         # tira una carta
@@ -198,7 +207,13 @@ def tiradas_crupier(points_crupier):
         # se determina su valor, lo que suma y se informa
         if str(carta) in "AJQK":
             if str(carta) in "A":
-                puntos_crupier += 11
+
+                # en el caso de que saque un A, se considera que si con esta suma mas de 21, esta solo valga 1
+                if puntos_crupier + 11 >= 22:
+                    puntos_crupier += 1
+
+                else:
+                    puntos_crupier += 11
 
             else:
                 puntos_crupier += 10
@@ -209,6 +224,38 @@ def tiradas_crupier(points_crupier):
             puntos_crupier += carta
             print("\nHa sacado el", carta, "de", palo, "sumando", puntos_crupier, "puntos")
 
+        # si hay apuesta segura y su siguiente carta equivale a un 10 el jugador gana su apuesta segura
+        if (str(carta) == "10" or str(carta) in "JQK" ) and flag == True:
+
+            apuesta_segura = players[playerID - 1].ver_apuesta_segura()
+            apuesta_segura *= 2
+
+            # aplicamos ganancias
+            players[playerID - 1].subir_fichas(apuesta_segura)
+
+            nombre_player = players[playerID - 1].name()
+            print("\n", nombre_player, "Ha ganado su Apuesta Segura.")
+
+            # restablecemos su apuesta segura
+            players[playerID - 1].asign_apuesta_segura(0)
+
+            flag = False
+
+        # pierde su apuesta segura
+        elif flag == True:
+            apuesta_segura = players[playerID - 1].ver_apuesta_segura()
+
+            players[playerID - 1].bajar_fichas(apuesta_segura)
+
+            # aplicamos perdidas
+            nombre_player = players[playerID - 1].name()
+            print("\n", nombre_player, "Ha perdido su Apuesta Segura.")
+
+            # restablecemos su apuesta segura
+            players[playerID - 1].asign_apuesta_segura(0)
+
+            flag = False
+
     # el crupier se planta
     print("\n\tHasta Aqui. El Crupier se planta")
 
@@ -217,7 +264,9 @@ def tiradas_crupier(points_crupier):
 def final_mano(players, playerID, points_crupier, flag21natural):
     points_player = players[playerID - 1].puntos()
     apuesta_player = players[playerID - 1].ver_apuesta()
+    comprobar_apuesta_maxima(players, playerID, apuesta_player)
 
+    # blackjack natural del jugador
     if flag21natural:
         # ganancia
         dinero_total = apuesta_player * 3
@@ -226,7 +275,7 @@ def final_mano(players, playerID, points_crupier, flag21natural):
         players[playerID - 1].subir_fichas(dinero_total)
 
         # estadistica de 21 natural
-        players[playerID - 1].natural21()
+        players[playerID - 1].natural_21()
         # estadistica de victoria
         players[playerID - 1].victoria()
         # restablecer apuesta
@@ -239,7 +288,7 @@ def final_mano(players, playerID, points_crupier, flag21natural):
     # bj del jugador
     elif points_player == 21:
         # ganancia
-        dinero_total = apuesta_player * 2
+        dinero_total = apuesta_player * 1.5
         # se aplica
         players[playerID - 1].comprobar_fichas(dinero_total)
         players[playerID - 1].subir_fichas(dinero_total)
@@ -272,12 +321,19 @@ def final_mano(players, playerID, points_crupier, flag21natural):
 
     # ninguno se paso
     elif points_player <= 21 and points_crupier <= 21:
+
         if points_player == points_crupier:
+            # restablecer apuesta
+            players[playerID - 1].asign_apuesta(0)
+
             print("\nHay Empate!, nadie pierde su apuesta!")
+
+            # restablecer puntos
+            players[playerID - 1].res_puntos()
 
         elif points_player > points_crupier:
             # ganancia
-            dinero_total = apuesta_player * 1.34
+            dinero_total = apuesta_player
             # se aplica
             players[playerID - 1].comprobar_fichas(dinero_total)
             players[playerID - 1].subir_fichas(dinero_total)
@@ -292,35 +348,43 @@ def final_mano(players, playerID, points_crupier, flag21natural):
             # restablecer puntos
             players[playerID - 1].res_puntos()
 
+        elif points_player < points_crupier:
+            # perdida
+            dinero_total = apuesta_player
+            # se aplica
+            players[playerID - 1].bajar_fichas(dinero_total)
+
+            # estadistica de derrota
+            players[playerID - 1].derrota()
+            # restablecer apuesta
+            players[playerID - 1].asign_apuesta(0)
+
+            print("\nGana el Crupier con", points_crupier, "puntos.", "\n\tHas perdido $", dinero_total)
+
+            # restablecer puntos
+            players[playerID - 1].res_puntos()
+
+
     # alguno se paso
     else:
-        if points_player <= 21:
-            if points_player == points_crupier:
-                # restablecer apuesta
-                players[playerID - 1].asign_apuesta(0)
-                # restablecer puntos
-                players[playerID - 1].res_puntos()
+        if points_player < 21:
+            # ganancia
+            dinero_total = apuesta_player
+            # se aplica
+            players[playerID - 1].comprobar_fichas(dinero_total)
+            players[playerID - 1].subir_fichas(dinero_total)
 
-                print("\nHay Empate!, nadie pierde su apuesta!")
+            # estadistica de victoria
+            players[playerID - 1].victoria()
+            # restablecer apuesta
+            players[playerID - 1].asign_apuesta(0)
 
-            elif points_player < points_crupier:
-                # ganancia
-                dinero_total = apuesta_player * 1.24
-                # se aplica
-                players[playerID - 1].comprobar_fichas(dinero_total)
-                players[playerID - 1].subir_fichas(dinero_total)
+            print("\nEl crupier ha superado los 21 puntos. Gana", players[playerID - 1].name(), " $", dinero_total)
 
-                # estadistica de victoria
-                players[playerID - 1].victoria()
-                # restablecer apuesta
-                players[playerID - 1].asign_apuesta(0)
+            # restablecer puntos
+            players[playerID - 1].res_puntos()
 
-                print("\nEl crupier ha superado los 21 puntos. Gana", players[playerID - 1].name(), " $", dinero_total)
-
-                # restablecer puntos
-                players[playerID - 1].res_puntos()
-
-        elif points_crupier <= 21:
+        elif points_crupier < 21:
             # perdida
             dinero_total = apuesta_player
             # se aplica
@@ -336,24 +400,25 @@ def final_mano(players, playerID, points_crupier, flag21natural):
             players[playerID - 1].res_puntos()
 
         else:
+            # restablecer apuesta
+            players[playerID - 1].asign_apuesta(0)
+
+            # restablecer puntos
+            players[playerID - 1].res_puntos()
+
             print("\nNadie Gana!. Ambos han Superado los 21 Puntos")
 
 def asignar_apuesta(players, playerID):
-    fichitas = players[playerID - 1].fichas()
+    fichas_disponibles = players[playerID - 1].fichas()
     while True:
         try:
             # se solicita la apuesta
             monto = int(input("\nCuanto Apuestas: "))
             player = players[playerID - 1]
 
-            if monto <= fichitas:
+            # comprobar si la apuesta es valida para su cantidad de fichas
+            if monto <= fichas_disponibles:
                 player.asign_apuesta(monto)
-
-                # se comprueba si es la maxima
-                if monto > player.ver_apuesta_maxima():
-
-                    player.n_apuesta_maxima(monto)
-
                 break
 
             else:
@@ -361,4 +426,53 @@ def asignar_apuesta(players, playerID):
 
         except:
             pass
+
+def comprobar_apuesta_maxima(players, playerID, monto):
+    # se comprueba si es la maxima
+    if monto > players[playerID - 1].ver_apuesta_maxima():
+        players[playerID - 1].n_apuesta_maxima(monto)
     
+def doblar_apuesta(players, playerID):
+    # obtenemos la cantidad de fichas disponibles
+    fichas_disponibles = players[playerID - 1].fichas()
+    apuesta_player = players[playerID - 1].ver_apuesta()
+
+    # y verificamos si al duplicar su apuesta puede pagar
+    if apuesta_player * 2 <= fichas_disponibles:
+        monto = apuesta_player * 2
+        # aplicamos su apuesta
+        players[playerID - 1].asign_apuesta(monto)
+
+        print("\nUsted ahora apuesta $", monto)
+
+        return 0
+
+    # en caso de que su apuesta supere sus fichas informamos
+    else:
+        print("No Dispone de Fichas Suficiente para doblar")
+
+        return 1
+
+def apostar_seguro(players, playerID):
+    # obtenemos la cantidad de fichas disponibles
+    fichas_disponibles = players[playerID - 1].fichas()
+
+    # cuanto quiere pagar
+    while True:
+        try:
+            # se solicita la apuesta a seguro
+            monto = int(input("\nCuanto Apuestas: "))
+            player = players[playerID - 1]
+
+            if monto <= fichas_disponibles:
+                player.asign_apuesta_segura(monto)
+                break
+
+            else:
+                print("\nTu apuesta supera tus fichas...")
+                # en caso de que su apuesta supere sus fichas informamos
+                break
+
+        except:
+            pass
+

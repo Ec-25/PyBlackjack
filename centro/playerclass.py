@@ -15,6 +15,7 @@ class Player:
 
         # partida
         self.apuesta = 0
+        self.apuesta_segura = 0
         self.points = 0
 
     def name(self):
@@ -26,8 +27,14 @@ class Player:
     def ver_apuesta(self):
         return self.apuesta
 
+    def ver_apuesta_segura(self):
+        return self.apuesta_segura
+
     def asign_apuesta(self, monto):
         self.apuesta = monto
+
+    def asign_apuesta_segura(self, monto):
+        self.apuesta_segura = monto
 
     def fichas(self):
         return self.chips
@@ -43,7 +50,7 @@ class Player:
         return self.chips
 
     def bajar_fichas(self, fichas):
-        # ingresa las fichas colocadas
+        # quita las fichas colocadas
         self.chips -= fichas
 
         # informa cuantas tiene disponible
@@ -99,7 +106,7 @@ class Player:
     def n_apuesta_maxima(self, monto):
         self.apuesta_maxima = monto
 
-    def natural21(self):
+    def natural_21(self):
         self.natural21 += 1
 
     def victoria(self):
