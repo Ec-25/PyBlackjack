@@ -199,8 +199,14 @@ def tiradas_crupier(points_crupier, flag, players, playerID):
     print("\n\tAhora el Crupier Tirara las cartas que considere...")
     puntos_crupier = points_crupier
     
+    if players[playerID - 1].puntos() < 18:
+        bandera_desicion = True
+
+    else:
+        bandera_desicion = False
+
     # bucle de tiradas
-    while puntos_crupier < 17:
+    while puntos_crupier < 17 or (puntos_crupier < players[playerID - 1].puntos() and bandera_desicion):
         # tira una carta
         carta, palo = tirar_carta()
 

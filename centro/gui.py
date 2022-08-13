@@ -1,17 +1,18 @@
 def menu():
     # diseño del menu
     menuini = """\n    =====================================================
-    \t\t\tBlacJack V2.0
+    \t\tGoverno Of BlackJack v0.5.7
     =====================================================
-    \t1) Crear Jugador
-    \t2) Jugar
-    \t3) Salir
+    \t1) Crear Partida
+    \t2) Cargar Partida
+    \t3) Jugar
+    \t4) Salir
     ====================================================="""
     print(menuini)
     # opcion a elejir del usuario
     opcion = 0
     # controlamos que solo ingrese numeros del 1 al 3
-    while opcion not in (1, 2, 3):
+    while opcion not in (1, 2, 3, 4):
         try:
             opcion = int(input("OPCION = "))
 
@@ -20,7 +21,7 @@ def menu():
             pass
 
     # si es 3 colocamos -1 para finalizar el bucle del programa
-    if opcion == 3:
+    if opcion == 4:
         opcion = -1
 
     return opcion
@@ -118,14 +119,15 @@ def menu_jugar(players, playerID):
     player = players[idn].name()
     
     opcion = -1
-    while opcion not in (1, 2, 3, 4):
+    while opcion not in (1, 2, 3, 4, 5):
 
         # diseño del menu
         print("\n    =====================================================", "\n\t\tBienvenido/a:", player, """\n    =====================================================
         1) Ingresar Fichas
         2) Jugar BlackJack
         3) Ver Estadisticas
-        4) Salir
+        4) Guardar Partida
+        5) Salir
     =====================================================""")
 
     # controlamos que solo ingrese numeros del 1 al 4
@@ -133,14 +135,14 @@ def menu_jugar(players, playerID):
             opcion = int(input("OPCION = "))
 
             # control de seleccion de opcion
-            if opcion not in (1, 2, 3, 4):
+            if opcion not in (1, 2, 3, 4, 5):
                 print("Opcion Invalida")
 
         # controlamos que solo ingrese numeros
         except ValueError:
             pass
 
-    if opcion != 4:
+    if opcion != 5:
         return opcion
     
     else:

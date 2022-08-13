@@ -2,6 +2,7 @@
 from centro.playerclass import *
 from centro.actions import *
 from centro.gui import *
+from centro.binary import *
 
 
 def main():
@@ -19,7 +20,64 @@ def main():
             players = crear_jugador(players)
             pass
 
+
         elif opcion == 2:
+            # cargar partida
+            print("\n\tCual es el Numero de la Partida que Quieres Ingresar?.")
+
+            try:
+                idPartida = 0
+                while idPartida not in (1, 2, 3, 4):
+                    idPartida = int(input("\n\n[id]\t"))
+
+            except ValueError:
+                pass
+
+            id_casilla = len(players) - 1
+            if id_casilla < 4:
+                # cargar partida si esta vacia la casilla
+                partidas = Read_Binary_File(idPartida)
+                players.pop(id_casilla)
+                players.append(partidas)
+                players.append(0)
+                
+            else:
+                # si todas las casillas estan cargadas se pregunta en cual reemplazar
+                player1 = players[0]
+                player2 = players[1]
+                player3 = players[2]
+                player4 = players[3]
+                print("\nError, demasiados Jugadores")
+                print(">>>")
+                print("1- ", player1.name())
+                print("2- ", player2.name())
+                print("3- ", player3.name())
+                print("4- ", player4.name())
+                print("5- Salir")
+                print("<<<")
+
+                # confirmacion de posicion valida para reemplazar jugador
+                pos = 0
+                while pos not in (1, 2, 3, 4, 5):
+                    try:
+                        if pos == -1:
+                            print("\nError, Seleccione una posicion valida")
+
+                        pos = int(input("\nElija una posicion para Reemplazar:\t"))
+
+                    except ValueError:
+                        pos = -1
+                        pass
+
+                # eliminamos al jugador antiguo, instanciamos al jugador nuevo y le asignamos nombre
+                partidas = Read_Binary_File(idPartida)
+                players.pop(4)
+                players.pop(pos - 1)
+                players.append(partidas)
+                players.append(0)
+
+
+        elif opcion == 3:
             # jugar, seleccionar jugador, y luego preguntar monto a apostar, y empezar la partida
 
             # primero se selecciona 1 de los 4 jugadores disponibles
@@ -100,26 +158,29 @@ def main():
                                         puntos = jugar(players, playerID)
                                         
                                         # decision = 0 por lo que no le pregunta si quiere seguir jugando, corta el bucle y avanza hasta las tiradas del crupier
-                                        desicion = 0
+                                        desicionsegJugar = 0
 
                                     else:
                                         # si no puede doblar continua normal con su primera apuesta
-                                        desicion = -1
+                                        desicionsegJugar = -1
+
+                                else:
+                                    desicionsegJugar = -1
 
                             else:
-                                desicion = -1
+                                desicionsegJugar = -1
                                 
                             # preguntamos si quiere seguir jugando
-                            while desicion not in (0, 1):
+                            while desicionsegJugar not in (0, 1):
                                 try:
-                                    desicion = int(input("\nQuieres seguir jugando?...[1 = Si ; 0 = No]\t"))
+                                    desicionsegJugar = int(input("\nQuieres seguir jugando?...[1 = Si ; 0 = No]\t"))
 
                                 # con esto facilitamos el que si escribe el texto continue
                                 except ValueError:
                                     pass
                             
                             # si elije seguir jugando
-                            if desicion == 1:
+                            if desicionsegJugar == 1:
                                 puntos = jugar(players, playerID)
 
                             # corta el bucle para dejar de jugar
@@ -136,6 +197,10 @@ def main():
                     elif eleccion == 3:
                         # ver estadisticas
                         ver_stats(players, playerID)
+
+                    elif eleccion == 4:
+                        # guardar partida
+                        Write_Binary_File(players[playerID - 1], playerID)
 
             else:
                 # en el caso de que el playerID de 0, por lo que no exista ningun jugador
