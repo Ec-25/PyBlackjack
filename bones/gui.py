@@ -35,25 +35,16 @@ def menu_seleccion_jugador(players):
     print(encabezado)
     # con los try, se garantiza que solo se imprimiran aquellos jugadores que existen
     print(">>>")
-    try:
-        print("1- ", players[0].name())
-    except:
-        pass
 
-    try:
-        print("2- ", players[1].name())
-    except:
-        pass
+    # intenta imprimir todos los jugadores existentes
+    for i in range(4):
+        try:
+            print(str(i+1), "-", players[i].name())
 
-    try:
-        print("3- ", players[2].name())
-    except:
-        pass
+        except:
+            # si el jugador no existe lo salta
+            pass
 
-    try:
-        print("4- ", players[3].name())
-    except:
-        pass
 
     print("5- Salir")
     print("<<<")
@@ -64,41 +55,18 @@ def menu_seleccion_jugador(players):
     while jugador not in (1, 2, 3, 4, 5):
         try:
             jugador = int(input("Jugador nro:  "))
-
-            if jugador == 1:
+            
+            # checkeo de la validez de la opcion ingresada
+            if jugador in (1, 2, 3, 4):
                 try:
                     # con una bienvenida podemos determinar si el jugador existe
-                    print("\nBienvenido/a", players[0].name())
+                    print("\nBienvenido/a", players[jugador-1].name())
 
                 except:
                     # si no se imprime un mensaje de error
                     print("Error, El jugador no Existe.")
                     jugador = -1
-
-            elif jugador == 2:
-                try:
-                    print("\nBienvenido/a", players[1].name())
-
-                except:
-                    print("Error, El jugador no Existe.")
-                    jugador = -1
-
-            elif jugador == 3:
-                try:
-                    print("\nBienvenido/a", players[2].name())
-
-                except:
-                    print("Error, El jugador no Existe.")
-                    jugador = -1
-
-            elif jugador == 4:
-                try:
-                    print("\nBienvenido/a", players[3].name())
-
-                except:
-                    print("Error, El jugador no Existe.")
-                    jugador = -1
-
+            
             else:
                 # si la opcion no existe se imprime el mensaje de error
                 if jugador != 5:

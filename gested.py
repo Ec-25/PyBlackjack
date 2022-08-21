@@ -1,8 +1,8 @@
 # Intento de Blackjack con 1 Crupier, hasta 4 Jugadores, y infinitas Rondas
-from centro.playerclass import *
-from centro.actions import *
-from centro.gui import *
-from centro.binary import *
+from bones.players import *
+from bones.actions import *
+from bones.gui import *
+from bones.binary import *
 
 
 def main():

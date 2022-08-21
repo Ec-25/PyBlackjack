@@ -90,15 +90,7 @@ class Player:
                 print("\nHa sacado el", carta, "de", palo)
 
     def estadisticas(self):
-        print("\n\t=====================================================\n")
-        print("\tJugador:", self.nombre)
-        print("\tCantidad de Victorias:", self.wins)
-        print("\tCantidad de Derrotas:", self.failed)
-        print("\tCantidad de veces conseguidas el 21 natural:", self.natural21)
-        print("\tSu apuesta maxima fue: $", self.apuesta_maxima)
-        print("\tCantidad de Fichas Disponibles: $", self.chips)
-        print("\tMonto maximos de Fichas que ha logrado tener: $", self.fichas_maximas)
-        print("\n\t=====================================================")
+        print("\n\t=====================================================\n", "\n\tJugador:", self.nombre, "\n\tCantidad de Victorias:", self.wins, "\n\tCantidad de Derrotas:", self.failed, "\n\tCantidad de veces conseguidas el 21 natural:", self.natural21, "\n\tSu apuesta maxima fue: $", self.apuesta_maxima, "\n\tCantidad de Fichas Disponibles: $", self.chips, "\n\tMonto maximos de Fichas que ha logrado tener: $", self.fichas_maximas, "\n\t=====================================================\n")
 
     def ver_apuesta_maxima(self):
         return self.apuesta_maxima

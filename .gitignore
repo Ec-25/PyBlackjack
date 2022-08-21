@@ -1,6 +1,14 @@
+# priv
 notas.txt
+
+# old version
 blackjack.py
+
+# saving files
 savingGOB1
 savingGOB2
 savingGOB3
 savingGOB4
+
+# cache
+*.pyc

@@ -1,4 +1,4 @@
-from centro.playerclass import *
+from bones.players import *
 import random
 
 
@@ -13,48 +13,22 @@ def crear_jugador(players):
 
     plys = len(players)
     # instanciamos al jugador, le asignamos nombre y lo guardamos en la lista
-    if plys == 1:
-        player1 = Player()
-        player1.change_name(name)
+    if plys in (1, 2, 3, 4):
+        player = Player()
+        player.change_name(name)
 
-        players[0] = player1
-        players.append(0)
-        
-
-    elif plys == 2:
-        player2 = Player()
-        player2.change_name(name)
-
-        players[1] = player2
-        players.append(0)
-
-    elif plys == 3:
-        player3 = Player()
-        player3.change_name(name)
-
-        players[2] = player3
-        players.append(0)
-
-    elif plys == 4:
-        player4 = Player()
-        player4.change_name(name)
-
-        players[3] = player4
+        players[plys-1] = player
         players.append(0)
 
     # solo se admiten 4 jugadores
     # si se supera se tendra que elejir a quien reemplazar
     else:
-        player1 = players[0]
-        player2 = players[1]
-        player3 = players[2]
-        player4 = players[3]
         print("\nError, demasiados Jugadores")
         print(">>>")
-        print("1- ", player1.name())
-        print("2- ", player2.name())
-        print("3- ", player3.name())
-        print("4- ", player4.name())
+        print("1- ", players[0].name())
+        print("2- ", players[1].name())
+        print("3- ", players[2].name())
+        print("4- ", players[3].name())
         print("5- Salir")
         print("<<<")
 
@@ -72,29 +46,13 @@ def crear_jugador(players):
                 pass
 
         # eliminamos al jugador antiguo, instanciamos al jugador nuevo y le asignamos nombre
-        if pos == 1:
-            del player1
-            player1 = Player()
-            player1.change_name(name)
-            players[0] = player1
-
-        elif pos == 2:
-            del player2
-            player2 = Player()
-            player2.change_name(name)
-            players[1] = player2
-
-        elif pos == 3:
-            del player3
-            player3 = Player()
-            player3.change_name(name)
-            players[2] = player3
-
-        elif pos == 4:
-            del player4
-            player4 = Player()
-            player4.change_name(name)
-            players[3] = player4
+        if pos in (1, 2, 3, 4):
+            # se crea el jugador
+            player = Player()
+            # se cambia el nombre
+            player.change_name(name)
+            # se lo guarda
+            players[pos-1] = player
 
         else:
             pass
@@ -182,7 +140,6 @@ def iniciar_partida(players, playerID):
 
     return points_crupier, de11
 
-
 def jugar(players, playerID):
     # una tirada mas
     carta, palo = tirar_carta()
@@ -267,6 +224,23 @@ def tiradas_crupier(points_crupier, flag, players, playerID):
 
     return puntos_crupier
 
+def juga_ganador(players, playerID, dinero_total):
+    # se aplica
+    players[playerID - 1].comprobar_fichas(dinero_total)
+    players[playerID - 1].subir_fichas(dinero_total)
+    # estadistica de victoria
+    players[playerID - 1].victoria()
+    # restablecer apuesta
+    players[playerID - 1].asign_apuesta(0)
+
+def juga_perdedor(players, playerID, dinero_total):
+    # se aplica
+    players[playerID - 1].bajar_fichas(dinero_total)
+    # estadistica de derrota
+    players[playerID - 1].derrota()
+    # restablecer apuesta
+    players[playerID - 1].asign_apuesta(0)
+
 def final_mano(players, playerID, points_crupier, flag21natural):
     points_player = players[playerID - 1].puntos()
     apuesta_player = players[playerID - 1].ver_apuesta()
@@ -276,18 +250,23 @@ def final_mano(players, playerID, points_crupier, flag21natural):
     if flag21natural:
         # ganancia
         dinero_total = apuesta_player * 3
+        """
         # se aplica
         players[playerID - 1].comprobar_fichas(dinero_total)
         players[playerID - 1].subir_fichas(dinero_total)
-
-        # estadistica de 21 natural
-        players[playerID - 1].natural_21()
         # estadistica de victoria
         players[playerID - 1].victoria()
         # restablecer apuesta
         players[playerID - 1].asign_apuesta(0)
+        """
+        # aplicar victoria general
+        juga_ganador(players, playerID, dinero_total)
+
+        # estadistica de 21 natural
+        players[playerID - 1].natural_21()
 
         print("\nEnhorabuena!, BlackJack Natural de", players[playerID - 1].name(), " Y has ganado $",dinero_total)
+
         # restablecer puntos
         players[playerID - 1].res_puntos()
 
@@ -295,14 +274,8 @@ def final_mano(players, playerID, points_crupier, flag21natural):
     elif points_player == 21:
         # ganancia
         dinero_total = apuesta_player * 1.5
-        # se aplica
-        players[playerID - 1].comprobar_fichas(dinero_total)
-        players[playerID - 1].subir_fichas(dinero_total)
-
-        # estadistica de victoria
-        players[playerID - 1].victoria()
-        # restablecer apuesta
-        players[playerID - 1].asign_apuesta(0)
+        # aplicar victoria general
+        juga_ganador(players, playerID, dinero_total)
 
         print("\nEnhorabuena!, BlackJack de", players[playerID - 1].name(), "; has ganado $", dinero_total)
 
@@ -312,18 +285,23 @@ def final_mano(players, playerID, points_crupier, flag21natural):
     #bj del crupier
     elif points_crupier == 21:
         # perdida
-        dinero_total = apuesta_player 
+        dinero_total = apuesta_player
+        """
         # se aplica
         players[playerID - 1].bajar_fichas(dinero_total)
         # estadistica de derrota
         players[playerID - 1].derrota()
         # restablecer apuesta
         players[playerID - 1].asign_apuesta(0)
+        """
+        # aplicar derrota general
+        juga_perdedor(players, playerID, dinero_total)
 
         print("\nQue Mala Suerte!, BlackJack del Crupier", "; Has perdido $", dinero_total)
 
         # restablecer puntos
         players[playerID - 1].res_puntos()
+        
 
     # ninguno se paso
     elif points_player <= 21 and points_crupier <= 21:
@@ -340,14 +318,8 @@ def final_mano(players, playerID, points_crupier, flag21natural):
         elif points_player > points_crupier:
             # ganancia
             dinero_total = apuesta_player
-            # se aplica
-            players[playerID - 1].comprobar_fichas(dinero_total)
-            players[playerID - 1].subir_fichas(dinero_total)
-
-            # estadistica de victoria
-            players[playerID - 1].victoria()
-            # restablecer apuesta
-            players[playerID - 1].asign_apuesta(0)
+            # aplicar victoria general
+            juga_ganador(players, playerID, dinero_total)
 
             print("\nGana el Jugador con", points_player, "puntos;", " Y gana $", dinero_total)
 
@@ -357,13 +329,8 @@ def final_mano(players, playerID, points_crupier, flag21natural):
         elif points_player < points_crupier:
             # perdida
             dinero_total = apuesta_player
-            # se aplica
-            players[playerID - 1].bajar_fichas(dinero_total)
-
-            # estadistica de derrota
-            players[playerID - 1].derrota()
-            # restablecer apuesta
-            players[playerID - 1].asign_apuesta(0)
+            # aplicar derrota general
+            juga_perdedor(players, playerID, dinero_total)
 
             print("\nGana el Crupier con", points_crupier, "puntos.", "\n\tHas perdido $", dinero_total)
 
@@ -376,14 +343,8 @@ def final_mano(players, playerID, points_crupier, flag21natural):
         if points_player < 21:
             # ganancia
             dinero_total = apuesta_player
-            # se aplica
-            players[playerID - 1].comprobar_fichas(dinero_total)
-            players[playerID - 1].subir_fichas(dinero_total)
-
-            # estadistica de victoria
-            players[playerID - 1].victoria()
-            # restablecer apuesta
-            players[playerID - 1].asign_apuesta(0)
+            # aplicar victoria general
+            juga_ganador(players, playerID, dinero_total)
 
             print("\nEl crupier ha superado los 21 puntos. Gana", players[playerID - 1].name(), " $", dinero_total)
 
@@ -393,12 +354,8 @@ def final_mano(players, playerID, points_crupier, flag21natural):
         elif points_crupier < 21:
             # perdida
             dinero_total = apuesta_player
-            # se aplica
-            players[playerID - 1].bajar_fichas(dinero_total)
-            # estadistica de derrota
-            players[playerID - 1].derrota()
-            # restablecer apuesta
-            players[playerID - 1].asign_apuesta(0)
+            # aplicar derrota general
+            juga_perdedor(players, playerID, dinero_total)
 
             print("\nHas superado los 21 puntos. Gana el Crupier. Pierdes $", dinero_total)
 
@@ -481,4 +438,3 @@ def apostar_seguro(players, playerID):
 
         except:
             pass
-
