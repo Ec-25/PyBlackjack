@@ -12,3 +12,4 @@ savingGOB4
 
 # cache
 *.pyc
+/output
